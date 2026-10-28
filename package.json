@@ -1,0 +1,58 @@
+{
+  "name": "dsh-session-enhance",
+  "version": "1.6.0",
+  "description": "会话增强 · 工作区/会话面包屑与内嵌会话管理（永久删除 / 归档）",
+  "icon": "./icon.svg",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xinspark/dsh-session-enhance.git"
+  },
+  "homepage": "https://github.com/xinspark/dsh-session-enhance",
+  "bugs": {
+    "url": "https://github.com/xinspark/dsh-session-enhance/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "harness",
+    "plugin",
+    "breadcrumb",
+    "workspace",
+    "session"
+  ],
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./lib/client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./package.json": "./package.json",
+    "./chat-manager": "./lib/components/chat-manager/index.js",
+    "./chat-manager/package.json": "./lib/components/chat-manager/package.json",
+    "./chat-manager/locale/*.json": "./lib/components/chat-manager/locale/*.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-workspace",
+        "@deepseek-ai/dsh-client-ui-primitives",
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    }
+  },
+  "files": [
+    "index.js",
+    "icon.svg",
+    "lib/client.js",
+    "lib/components/chat-manager",
+    "locale/*.json",
+    "cordis.patch.yml",
+    "CHANGELOG.md"
+  ]
+}

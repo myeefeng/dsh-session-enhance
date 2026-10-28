@@ -1,0 +1,5 @@
+{
+  "name": "会话管理",
+  "description": "内嵌自 dsh-chat-manager 的会话管理组件：永久删除、归档会话、已归档会话的搜索/取消归档/永久删除（MIT © WSL043）。作为 dsh-session-enhance 的必选组件，默认开启、可开关。",
+  "type": "module"
+}

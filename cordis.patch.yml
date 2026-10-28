@@ -1,0 +1,10 @@
+# dsh-session-enhance 配置层：插入 host + client 双半插件行。
+# name 用包名 —— DSH 从 profile 的 node_modules 解析（`dsh plugin add` / pnpm link 装好后即可解析）。
+# 注意：新增行必须用下面的 insert 列表；顶层 `- id/name` 是按 id 覆盖已有行，不能用来新增。
+# dsh-session-enhance/chat-manager 是内嵌的「会话管理」组件（永久删除 / 归档），
+# 默认开启（运行中），用户可在 DSH 组件开关里停用。
+- insert:
+    - id: dsh-session-enhance
+      name: dsh-session-enhance
+    - id: dsh-bst-chat-manager
+      name: dsh-session-enhance/chat-manager
