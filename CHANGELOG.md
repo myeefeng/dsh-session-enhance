@@ -5,6 +5,13 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1] - 2026-10-28
+
+### Changed
+
+- **运行中标记改为 DSH 桌面端原生样式**：改用原生 `StateDot`（`@deepseek-ai/dsh-client-ui-primitives`）组件，运行中显示为空心圆环（与侧边栏会话行完全一致），不再使用自绘绿色脉冲点。
+- **新增「待审批」状态显示**：当会话存在待处理的审批/计划审核/待回答交互时，左侧显示橙色 `StateDot`（warning），行尾把相对时间替换为「待审批 / 计划待审 / 待回答」文字，对齐原生 `sessionStatuses`（`uiSession.sessionStatus` 的 `pendingInteraction.kind`）。状态来源不变（惰性 `ctx.get('uiSession')`，缺服务时降级为无标记）。
+
 ## [1.6.0] - 2026-10-28
 
 ### Changed
