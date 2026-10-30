@@ -60,6 +60,7 @@ dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.6.1
 | 多级面包屑 | 顶栏左侧以「工作区 / 会话」展示当前位置，两侧各自展开下拉列表；进入子智能体会话时自动扩展为「工作区 / 父会话 / 子智能体会话」（祖先级可点跳回）。 |
 | 逐级自适应图标态 | 顶栏真放不下时才收图标：**整条溢出 → 全部收成图标**（防止被窗口边缘裁掉）；**某一级被挤到读不出内容**（可见宽度 < 80px ≈ 5 个汉字）→ 只收这一级。图标按级取：工作区＝文件夹、普通会话级＝会话字形、子智能体级＝原生 switcher 的上下双箭头；完整标题仍在悬停提示与可访问名里。窗口宽、只是标题超过该级上限时保留截断文本（比一个图标信息量大）。`/` 分隔始终保留 —— 图标态下层级顺序靠它读出来。 |
 | 工作区下拉 | 工作区列表（含会话数元信息）、新建工作区（原生目录选择器）、行内更多：重命名 / 删除工作区。 |
+| 工作区行悬停预览 | 鼠标停在某个工作区行上，右侧展开该工作区的会话列表（置顶优先、当前会话高亮，行尾相对时间、行首状态点），点行直接切过去；移开鼠标自动收起。右侧放不下时翻到行左侧，窄窗口下夹进视口。悬停有 120ms 意图延迟（沿列表划下去不会一路弹窗），移出有 200ms 宽限（跨过间隙进侧栏不会误关）。指针触发；键盘用户仍用会话下拉。 |
 | 会话下拉 | 当前工作区的会话列表（含相对时间元信息）、新建会话、行内更多：重命名 / 分支 / 归档会话、**永久删除**（调用内嵌组件 `dsh-session-enhance/chat-manager` 的删除路由）。行首用原生 `StateDot` 显示状态（运行中空心圆环 / 待审批橙色圆点），待审批时行尾显示「待审批」等文字。 |
 | 会话管理（内嵌组件） | 永久删除会话（二次确认）、归档会话、「已归档会话」设置页（搜索 / 取消归档 / 永久删除）。见下文「内嵌组件：会话管理」。 |
 | 新会话页的面包屑 | 新会话时宿主会抑制顶栏标题内容（`hideChrome`），而 `conversation.header.leading` 正是宿主为「会话之前就要有全局导航」预留的空位（scope=root、常驻渲染）—— 于是新会话页顶栏本来是空的。插件在这一槽额外注册一份：显示「工作区 / 新会话」，会话下拉里列出该工作区的历史会话 —— 新增会话时想回看旧会话不必开侧边栏。与有会话时的那份**互斥**（有真实会话时这一份不渲染），同一时刻顶栏只有一条面包屑。 |
@@ -90,6 +91,7 @@ dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.6.1
 安装后，打开任意会话，顶栏中央即显示「工作区 / 会话」面包屑：
 
 - 点击**工作区**一侧：展开工作区下拉（顶部为「新建工作区」）。
+- 悬停**工作区行**：右侧展开该工作区的会话列表（点会话即切换）；鼠标移开自动收起，滚动列表也会收起。
 - 点击**会话**一侧：展开会话下拉（顶部为「新建会话」）。
 - 悬停列表行：行尾显示「更多」按钮（重命名 / 分支 / 归档 / 永久删除，按行类型而定）。
 - 行首状态点：空心圆环＝运行中；橙色圆点＝待审批 / 计划待审 / 待回答（此时行尾显示对应文字）。
@@ -105,9 +107,10 @@ dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.6.1
 - **`lib/client.js`** —— 浏览器半（UMD，注册进 DSH `clientModules`）。结构自上而下：
   1. 本地基础工具：样式注入 / 定时器。
   2. **双语字典**（`BST_ZH` / `BST_EN`）—— 注册进 `ctx.locale`，跟随语言切换；`bstT()` 带 fallback。
-  3. **自绘下拉列表** `BstList` —— 沿用原生菜单样式与 token；定位避让视口边缘；`click` 外部关闭（不用 mousedown/pointerdown：它们先于 `click` 派发，会先行卸载列表、吃掉行内 click）。
-  4. `WorkspaceTitleBreadcrumb` —— 注册进 `conversation.session.header.actions`（`order: -40`，顶栏最左）；逐级自适应图标态（该级标签被挤到可见宽度 < `ICONIC_TEXT_FLOOR` 才换图标，恢复走 header 宽度滞回，故不抖动）；更多菜单与下拉同生命周期；重命名/删除走原生 Modal；运行中 / 待审批状态通过订阅 `uiSession.sessionStatus` 并用原生 `StateDot` 渲染。
-  5. `apply(ctx)` —— 样式注入 + 槽位注册；`inject: ['slots','workspaces','sessions','uiWorkspace','locale','shortcuts']`（服务依赖必须声明，否则 apply 抢跑会把 `undefined` 永久固化进所有动作，表现为「界面正常、点了没反应」）。会话状态来源 `uiSession.sessionStatus`（`Map<sessionId,{running,pendingInteraction,completionUnread}>`）在部分宿主代际上不存在，因此用 `ctx.get` 惰性读取、缺了降级为「无标记」，不进 inject。末尾调用 `registerChatManagerClient` 注册内嵌会话管理的 client 功能。
+  3. **自绘下拉列表** `BstList` —— 沿用原生菜单样式与 token；定位避让视口边缘；`click` 外部关闭（不用 mousedown/pointerdown：它们先于 `click` 派发，会先行卸载列表、吃掉行内 click）。工作区下拉额外用它的可选钩子（`onRowHover` / `onRowLeave` / `onScroll` / `panelRef`）。
+  4. **悬停侧栏** `BstSideList` —— 悬停工作区行时在行右侧展开的会话列表（见下面扩展速查里的四个坑）。
+  5. `WorkspaceTitleBreadcrumb` —— 注册进 `conversation.session.header.actions`（`order: -40`，顶栏最左）；逐级自适应图标态（该级标签被挤到可见宽度 < `ICONIC_TEXT_FLOOR` 才换图标，恢复走 header 宽度滞回，故不抖动）；更多菜单与下拉同生命周期；重命名/删除走原生 Modal；运行中 / 待审批状态通过订阅 `uiSession.sessionStatus` 并用原生 `StateDot` 渲染。
+  6. `apply(ctx)` —— 样式注入 + 槽位注册；`inject: ['slots','workspaces','sessions','uiWorkspace','locale','shortcuts']`（服务依赖必须声明，否则 apply 抢跑会把 `undefined` 永久固化进所有动作，表现为「界面正常、点了没反应」）。会话状态来源 `uiSession.sessionStatus`（`Map<sessionId,{running,pendingInteraction,completionUnread}>`）在部分宿主代际上不存在，因此用 `ctx.get` 惰性读取、缺了降级为「无标记」，不进 inject。末尾调用 `registerChatManagerClient` 注册内嵌会话管理的 client 功能。
 
 扩展速查：
 
@@ -117,6 +120,7 @@ dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.6.1
 - **调整图标态阈值** —— 阈值是 `ICONIC_TEXT_FLOOR`（≈5 个汉字宽）：某级文本被截断且可见宽度低于它、或整条面包屑溢出，才换图标。两个坑：① 别用「标题超过该级 `max-width`」当判据 —— 那在宽窗口下也会命中（长标题本来就超上限），界面会莫名其妙地到处变图标；② 别假设"文本一定会被挤" —— 顶栏容器默认不可收缩，溢出会表现为被窗口边缘裁掉（见 `has(.bst-crumbs)` 那条让容器可收缩的样式）。
 - **给链上加一级** —— 只改 `bstSessionChain`（数据）即可；渲染端逐级同一段代码，图标按 `node.subagent` 取（子智能体级＝上下双箭头，其余＝会话字形），所以任何链长都不会出现「某级没有图标」的空洞。
 - **下拉必须 portal 到 `document.body`** —— 原地渲染会落在顶栏槽位里，被应用外壳的层叠上下文压住：外壳/聊天内容（含第三方插件注入的「复制」按钮）会盖在下拉上面，列表首行也可能被侧栏网格盖住。原生 `Menu` 的 `portal: true` 就是同一个理由。
+- **悬停侧栏（工作区 → 会话列表）** —— `BstSideList` 与主列表是**两个** portal 兄弟节点，各自定位：主列表锚定工作区按钮，侧栏锚定「被悬停行」的矩形（`rect.right + 6`，放不下翻到左侧，两侧都放不下则夹进视口）。四处容易踩的坑：① 侧栏必须通过 `panelRef` 参与 `BstList` 的「点击外部关闭」判定，否则在侧栏里点空白处 / 滚动条会被当成点击外部、把整条下拉关掉（行内 click 本身不会丢：React 18 的 portal 事件监听挂在 portal 容器上，先于 `document` 上的监听器派发）；② 侧栏靠行矩形定位，列表一旦滚动矩形就失效 —— `onScroll` 必须立即收起；③ 开/关计时器（120ms 意图延迟 / 200ms 宽限）必须在列表关闭、滚动、组件卸载时清掉，否则会在已关闭的列表上残留一次 `setState`；④ 行悬停用 **`mouseover` 而不是 `mouseenter`**：只有冒泡上来的 `mouseover` 才能识别「指针从行内移到行尾『更多』按钮」，从而收起侧栏（`mouseenter` 只在进入行时触发一次，不会重发）。侧栏行复用 `.bst-item`，但 `.bst-side` 要覆盖「悬停隐藏元信息」那条规则（侧栏行没有「更多」按钮，相对时间不该消失）。
 - **行动作行别用原生文案** —— 「手机口袋」类插件（实测 `dsh-pocket` 2.11.0 的 `hideWsEntries`）会全局扫描 `[role=menuitem]/[role=option]/li/button/a`，按文本**精确匹配** `添加工作区` / `Add workspace` 后写 `display:none`，并挂 MutationObserver 让新插入的节点同样被隐藏；沿用原生文案的那一行会被一并吃掉，看起来就是「下拉里少了一行」。自有文案（`新建工作区` / `New workspace`）即可避开。
 
 ### 内嵌组件：会话管理（`dsh-session-enhance/chat-manager`）

@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "Session Enhance",
-    "description": "Replaces the session topbar title with a workspace/session breadcrumb, with quick switching, pinning, forking, archiving, and built-in session management (permanent delete / archive)."
+    "description": "Replaces the session topbar title with a workspace/session breadcrumb, with quick switching, a hover preview of each workspace's sessions, pinning, forking, archiving, and built-in session management (permanent delete / archive)."
   }
 }

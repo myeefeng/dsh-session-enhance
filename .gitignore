@@ -3,3 +3,5 @@ node_modules/
 *.log
 .DS_Store
 Thumbs.db
+# 本地 UI 验证台（最小 DSH 环境替身 + 无头 Chromium 脚本），不进包也不入库
+.tmp/
