@@ -1,16 +1,16 @@
 {
   "name": "dsh-session-enhance",
-  "version": "1.6.1",
+  "version": "1.6.3",
   "description": "会话增强 · 工作区/会话面包屑与内嵌会话管理（永久删除 / 归档）",
   "icon": "./icon.svg",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/xinspark/dsh-session-enhance.git"
+    "url": "https://github.com/myeefeng/dsh-session-enhance.git"
   },
-  "homepage": "https://github.com/xinspark/dsh-session-enhance",
+  "homepage": "https://github.com/myeefeng/dsh-session-enhance",
   "bugs": {
-    "url": "https://github.com/xinspark/dsh-session-enhance/issues"
+    "url": "https://github.com/myeefeng/dsh-session-enhance/issues"
   },
   "keywords": [
     "dsh",

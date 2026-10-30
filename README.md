@@ -1,9 +1,9 @@
 <p align="center">
-  <img src="docs/screenshots/workspace-dropdown.png" alt="Better Session Title 工作区下拉展示" width="100%">
+  <img src="docs/screenshots/workspace-dropdown.png" alt="会话增强 工作区下拉展示" width="100%">
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/v/release/xinspark/dsh-better-session-title?style=flat&amp;label=release&amp;color=08C" alt="GitHub release">
+  <img src="https://img.shields.io/github/v/release/myeefeng/dsh-session-enhance?style=flat&amp;label=release&amp;color=08C" alt="GitHub release">
   <img src="https://img.shields.io/badge/plugin-UI%20%E5%A2%9E%E5%BC%BA-47848F?style=flat" alt="UI enhancement plugin">
   <img src="https://img.shields.io/badge/DSH%20Web%20GUI-Windows%20%7C%20macOS%20%7C%20Linux-4493F8?style=flat" alt="Windows | macOS | Linux">
   <img src="https://img.shields.io/badge/license-MIT-2EA44F?style=flat" alt="MIT License">
@@ -11,44 +11,47 @@
 
 <p align="center"><sub>简体中文 · <a href="README.en.md">English</a></sub></p>
 
-<h3 align="center">把 DSH 顶栏的会话标题换成「工作区 / 会话」两级面包屑，切换入口直接放在顶栏</h3>
+<h3 align="center">顶栏「工作区 / 会话」面包屑 + 内嵌会话管理（永久删除 / 归档），并显示运行中 / 待审批状态</h3>
 
-<p align="center"><a href="#安装"><ins><code>dsh plugin --profile web add github:xinspark/dsh-better-session-title#v1.2.0</code></ins></a></p>
+<p align="center"><a href="#安装"><ins><code>dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.6.1</code></ins></a></p>
 
-Better Session Title 是面向 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的**会话顶栏增强插件**——纯 UI 增强，不引入新能力，不改任何系统源码。DSH 原生顶栏中央只显示会话标题（层级面包屑），工作区/会话的切换入口在左侧边栏；侧边栏收起时，每次切换都要额外点击。本插件把切换入口直接放进顶栏：
+**会话增强（Session Enhance）** 是面向 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的**会话顶栏增强插件**——以 UI 增强为主，并内嵌可开关的「会话管理」组件（会话永久删除 / 归档）。DSH 原生顶栏中央只显示会话标题（层级面包屑），工作区/会话的切换入口在左侧边栏；侧边栏收起时，每次切换都要额外点击。本插件把切换入口直接放进顶栏：
 
 - **工作区下拉** —— 展开可见全部工作区及其会话数，一键切换；可「新建工作区」（原生目录选择器）或删除。
-- **会话下拉** —— 展开可见当前工作区全部会话及相对更新时间，一键切换；可「新建会话」。
+- **会话下拉** —— 展开可见当前工作区全部会话及相对更新时间，一键切换；可「新建会话」；行内更多支持重命名 / 分支 / 归档 / **永久删除**。
 - **新会话页也有面包屑** —— 新会话时顶栏同样显示「工作区 / 新会话」，会话下拉里直接列出该工作区的历史会话：新增会话的同时想回看旧会话，不用开侧边栏。
+- **运行中 / 待审批状态**（对齐 DSH 桌面端原生样式）—— 会话行左侧用原生 `StateDot` 显示状态：**运行中**为空心圆环；**待审批 / 计划待审 / 待回答**为橙色圆点，且行尾把相对时间换成对应文字（如「待审批」）。
 
-行内操作全部复用 DSH 原生能力：重命名工作区/会话、删除工作区、分支会话、归档会话，与原生侧边栏行为完全一致。
+行内操作全部复用 DSH 原生能力：重命名工作区/会话、删除工作区、分支会话、归档会话，与原生侧边栏行为完全一致。永久删除 / 归档管理来自内嵌的「会话管理」组件（原 dsh-chat-manager）。
 
 支持 **Windows · macOS · Linux**（DSH Web GUI）——纯 JavaScript，无原生依赖，分发无需构建步骤。
 
-> 验证基线：**DeepSeek Harness 0.2.1-rc.2**（DSH NEXT Desktop 与 `dsh web`）；1.2.1 起同时兼容 0.2.0-rc.2。其它版本未经验证。
+> 验证基线：**DeepSeek Harness 0.2.1-rc.2**（DSH NEXT Desktop 与 `dsh web`）；同时兼容 0.2.0-rc.2。其它版本未经验证。
 
 ## 安装
 
-`dsh-better-session-title` 是一个**组合包（bundle）**——以包形式分发的配置补丁层（见 [DSH 官方插件发布文档](https://deepseek-harness.github.io/deepseek-harness/develop/basic/publish)）。用 `dsh plugin` 命令安装进 profile：它会自动链接包并追加到 `dsh.profile.bundles`：
+`dsh-session-enhance` 是一个**组合包（bundle）**——以包形式分发的配置补丁层（见 [DSH 官方插件发布文档](https://deepseek-harness.github.io/deepseek-harness/develop/basic/publish)）。用 `dsh plugin` 命令安装进 profile：它会自动链接包并追加到 `dsh.profile.bundles`：
 
 ```sh
-# 从 GitHub 安装（主分发渠道，v1.2.0 为当前发布 tag）
-dsh plugin --profile web add github:xinspark/dsh-better-session-title#v1.2.0
+# 从 GitHub 安装（主分发渠道，v1.6.1 为当前发布 tag）
+dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.6.1
 ```
 
-- **建议锁定 commit**：GitHub 安装拉取的是仓库源码，tag 之后的新推送不会自动影响已安装版本；如需把运行内容严格固定到某个提交，用 `github:xinspark/dsh-better-session-title#<commit-sha>`（官方文档推荐做法）。
+- **建议锁定 commit**：GitHub 安装拉取的是仓库源码，tag 之后的新推送不会自动影响已安装版本；如需把运行内容严格固定到某个提交，用 `github:myeefeng/dsh-session-enhance#<commit-sha>`（官方文档推荐做法）。
 - **本地目录 / tarball**（开发或离线环境）：
 
   ```sh
-  dsh plugin --profile web add ./dsh-better-session-title
-  dsh plugin --profile web add ./dsh-better-session-title-1.2.0.tgz
+  dsh plugin --profile web add ./dsh-session-enhance
+  dsh plugin --profile web add ./dsh-session-enhance-1.6.1.tgz
   ```
 
 然后启动 Web UI：`dsh web`（或 `dsh --profile web`）。首次 `add` 会自动用 `@deepseek-ai/dsh-base` 初始化 profile。
 
-卸载：`dsh plugin --profile web remove dsh-better-session-title`（同时移除依赖与组合层）。
+卸载：`dsh plugin --profile web remove dsh-session-enhance`（同时移除依赖与组合层）。
 
-插件的 bundle 补丁（`cordis.patch.yml`）会自动注册 host 与 client 两半。客户端按请求加载：客户端改动刷新页面即可，host 改动需要重启。
+插件的 bundle 补丁（`cordis.patch.yml`）会自动注册主插件行与内嵌「会话管理」组件行（host 路由）。客户端按请求加载：客户端改动刷新页面即可，host 改动需要重启。
+
+> 安装后插件管理列表里显示名为「会话增强」；「组件」里另有可开关的「会话管理」组件（`dsh-session-enhance/chat-manager`，默认开启）。
 
 ## 主要功能
 
@@ -57,7 +60,8 @@ dsh plugin --profile web add github:xinspark/dsh-better-session-title#v1.2.0
 | 多级面包屑 | 顶栏左侧以「工作区 / 会话」展示当前位置，两侧各自展开下拉列表；进入子智能体会话时自动扩展为「工作区 / 父会话 / 子智能体会话」（祖先级可点跳回）。 |
 | 逐级自适应图标态 | 顶栏真放不下时才收图标：**整条溢出 → 全部收成图标**（防止被窗口边缘裁掉）；**某一级被挤到读不出内容**（可见宽度 < 80px ≈ 5 个汉字）→ 只收这一级。图标按级取：工作区＝文件夹、普通会话级＝会话字形、子智能体级＝原生 switcher 的上下双箭头；完整标题仍在悬停提示与可访问名里。窗口宽、只是标题超过该级上限时保留截断文本（比一个图标信息量大）。`/` 分隔始终保留 —— 图标态下层级顺序靠它读出来。 |
 | 工作区下拉 | 工作区列表（含会话数元信息）、新建工作区（原生目录选择器）、行内更多：重命名 / 删除工作区。 |
-| 会话下拉 | 当前工作区的会话列表（含相对时间元信息）、新建会话、行内更多：重命名 / 分支 / 归档会话、**永久删除**（调用内嵌组件 `dsh-better-session-title/chat-manager` 的删除路由）、运行中标记（圆点 + 脉冲）。 |
+| 会话下拉 | 当前工作区的会话列表（含相对时间元信息）、新建会话、行内更多：重命名 / 分支 / 归档会话、**永久删除**（调用内嵌组件 `dsh-session-enhance/chat-manager` 的删除路由）。行首用原生 `StateDot` 显示状态（运行中空心圆环 / 待审批橙色圆点），待审批时行尾显示「待审批」等文字。 |
+| 会话管理（内嵌组件） | 永久删除会话（二次确认）、归档会话、「已归档会话」设置页（搜索 / 取消归档 / 永久删除）。见下文「内嵌组件：会话管理」。 |
 | 新会话页的面包屑 | 新会话时宿主会抑制顶栏标题内容（`hideChrome`），而 `conversation.header.leading` 正是宿主为「会话之前就要有全局导航」预留的空位（scope=root、常驻渲染）—— 于是新会话页顶栏本来是空的。插件在这一槽额外注册一份：显示「工作区 / 新会话」，会话下拉里列出该工作区的历史会话 —— 新增会话时想回看旧会话不必开侧边栏。与有会话时的那份**互斥**（有真实会话时这一份不渲染），同一时刻顶栏只有一条面包屑。 |
 | 原生一致的交互 | 下拉为自绘层，卡片沿用原生菜单 token（`--dsw-elevation-prominent`、`--dsw-radius-lg`、`--dsw-menu-surface-fill` + `--dsw-menu-backdrop-filter`、hover 填充 `--dsw-alias-interactive-bg-hover`）；行内度量为 min-height 40 / padding 8·10 / 14px·22px（与原生 `AccountMenu` 的 `[role=menuitem]` 一致；原生 `Menu.module.css` 更紧凑，本插件未跟随）。更多菜单、重命名/删除对话框全部使用原生 `Menu` / `Modal` / `Button` / `Input`（autoFocus、全选、输入法组合 Enter 防误触、工作区重复名校验、错误行）。 |
 | 生命周期一致 | 更多菜单跟随其所在下拉同生命周期：下拉关闭（点击外部 / Escape / 选择 / 切换）时菜单一并关闭，不残留孤立菜单。 |
@@ -87,7 +91,8 @@ dsh plugin --profile web add github:xinspark/dsh-better-session-title#v1.2.0
 
 - 点击**工作区**一侧：展开工作区下拉（顶部为「新建工作区」）。
 - 点击**会话**一侧：展开会话下拉（顶部为「新建会话」）。
-- 悬停列表行：行尾显示「更多」按钮（重命名 / 分支 / 归档等，按行类型而定）。
+- 悬停列表行：行尾显示「更多」按钮（重命名 / 分支 / 归档 / 永久删除，按行类型而定）。
+- 行首状态点：空心圆环＝运行中；橙色圆点＝待审批 / 计划待审 / 待回答（此时行尾显示对应文字）。
 - 选择行即切换；点击空白处或按 `Esc` 关闭下拉。
 
 ## 与官方项目的关系
@@ -101,8 +106,8 @@ dsh plugin --profile web add github:xinspark/dsh-better-session-title#v1.2.0
   1. 本地基础工具：样式注入 / 定时器。
   2. **双语字典**（`BST_ZH` / `BST_EN`）—— 注册进 `ctx.locale`，跟随语言切换；`bstT()` 带 fallback。
   3. **自绘下拉列表** `BstList` —— 沿用原生菜单样式与 token；定位避让视口边缘；`click` 外部关闭（不用 mousedown/pointerdown：它们先于 `click` 派发，会先行卸载列表、吃掉行内 click）。
-  4. `WorkspaceTitleBreadcrumb` —— 注册进 `conversation.session.header.actions`（`order: -40`，顶栏最左）；逐级自适应图标态（该级标签被挤到可见宽度 < `ICONIC_TEXT_FLOOR` 才换图标，恢复走 header 宽度滞回，故不抖动）；更多菜单与下拉同生命周期；重命名/删除走原生 Modal；运行中会话通过订阅 `uiSession.sessionStatus` 打标记。
-  5. `apply(ctx)` —— 样式注入 + 槽位注册；`inject: ['slots','workspaces','sessions','uiWorkspace','locale']`（服务依赖必须声明，否则 apply 抢跑会把 `undefined` 永久固化进所有动作，表现为「界面正常、点了没反应」）。「运行中」来源 `uiSession.sessionStatus` 在部分宿主代际上不存在，因此用 `ctx.get` 惰性读取、缺了降级为「无标记」，不进 inject。
+  4. `WorkspaceTitleBreadcrumb` —— 注册进 `conversation.session.header.actions`（`order: -40`，顶栏最左）；逐级自适应图标态（该级标签被挤到可见宽度 < `ICONIC_TEXT_FLOOR` 才换图标，恢复走 header 宽度滞回，故不抖动）；更多菜单与下拉同生命周期；重命名/删除走原生 Modal；运行中 / 待审批状态通过订阅 `uiSession.sessionStatus` 并用原生 `StateDot` 渲染。
+  5. `apply(ctx)` —— 样式注入 + 槽位注册；`inject: ['slots','workspaces','sessions','uiWorkspace','locale','shortcuts']`（服务依赖必须声明，否则 apply 抢跑会把 `undefined` 永久固化进所有动作，表现为「界面正常、点了没反应」）。会话状态来源 `uiSession.sessionStatus`（`Map<sessionId,{running,pendingInteraction,completionUnread}>`）在部分宿主代际上不存在，因此用 `ctx.get` 惰性读取、缺了降级为「无标记」，不进 inject。末尾调用 `registerChatManagerClient` 注册内嵌会话管理的 client 功能。
 
 扩展速查：
 
@@ -114,13 +119,13 @@ dsh plugin --profile web add github:xinspark/dsh-better-session-title#v1.2.0
 - **下拉必须 portal 到 `document.body`** —— 原地渲染会落在顶栏槽位里，被应用外壳的层叠上下文压住：外壳/聊天内容（含第三方插件注入的「复制」按钮）会盖在下拉上面，列表首行也可能被侧栏网格盖住。原生 `Menu` 的 `portal: true` 就是同一个理由。
 - **行动作行别用原生文案** —— 「手机口袋」类插件（实测 `dsh-pocket` 2.11.0 的 `hideWsEntries`）会全局扫描 `[role=menuitem]/[role=option]/li/button/a`，按文本**精确匹配** `添加工作区` / `Add workspace` 后写 `display:none`，并挂 MutationObserver 让新插入的节点同样被隐藏；沿用原生文案的那一行会被一并吃掉，看起来就是「下拉里少了一行」。自有文案（`新建工作区` / `New workspace`）即可避开。
 
-### 内嵌组件：会话管理（`dsh-better-session-title/chat-manager`）
+### 内嵌组件：会话管理（`dsh-session-enhance/chat-manager`）
 
 会话「永久删除 / 归档管理」需要常驻的 host 路由（`/plugins/dsh-session-delete/*`），因此把 [dsh-chat-manager](https://github.com/) 的**全部功能**作为本插件的**必选组件**内嵌进来（组件显示名「会话管理」），而不是作为外部依赖：
 
 - **host 半**（`lib/components/chat-manager/index.js` + `host/`，复用 dsh-chat-manager 的 `delete-session` / `archive-manager`）：会话永久删除、归档会话的路由，由组件行开关控制。
 - **client 半**（并入主插件 `lib/client.js` 的 `registerChatManagerClient`，随主插件加载）：侧边栏会话菜单的「永久删除」项 + 删除确认对话框、侧边栏头部「已归档会话」入口、设置页「已归档会话」（搜索 / 取消归档 / 永久删除）。
-- 在 `package.json` 与 `cordis.patch.yml` 中注册为一条可开关行（`id: dsh-bst-chat-manager`、`name: dsh-better-session-title/chat-manager`），**默认开启**，可在 DSH 组件开关里停用。
+- 在 `package.json` 与 `cordis.patch.yml` 中注册为一条可开关行（`id: dsh-bst-chat-manager`、`name: dsh-session-enhance/chat-manager`），**默认开启**，可在 DSH 组件开关里停用。
 - **架构说明**：DSH 客户端每个 npm 包仅有**一个** `./client` bundle（`dsh-client-modules` 按包名解析出该包的 `dsh.client` + `exports["./client"]`），子组件无法自带独立 client 半，故 chat-manager 的 client 功能全部并入主 client、在主插件 `apply` 时一并注册；组件行只承载 host 路由（可开关）。
 - **版权**：组件代码以 MIT 许可从 dsh-chat-manager（© WSL043）复制，版权与许可声明随组件保留。
 
@@ -134,4 +139,4 @@ dsh plugin --profile web add github:xinspark/dsh-better-session-title#v1.2.0
 
 [MIT](LICENSE) —— 完全开源免费。
 
-Better Session Title 是 DeepSeek Harness 的社区插件，**并非 DeepSeek 官方产品**。
+会话增强（Session Enhance）是 DeepSeek Harness 的社区插件，**并非 DeepSeek 官方产品**。

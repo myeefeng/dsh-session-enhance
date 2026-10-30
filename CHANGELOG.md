@@ -5,12 +5,34 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.3] - 2026-10-30
+
+### Fixed
+
+- **面包屑的图标态不再「粘住」：标题刷新后无需切换会话即可恢复文本。** 1.6.2 只收窄了触发条件，判定本身仍然**带记忆**：图标态下文本被移出文档流，量不到「显示文本需要多宽」，旧实现只能记住折叠时的 header 宽度、等它宽回来 +180px 才展开。一旦某次量在错误时机（新会话页首帧、标题刚生成、其它插件的动作刚挂上），面包屑就永久停在图标态 —— 此后窗口变宽、标题变短都不会让它回来，**只有切换会话（组件重挂、状态清零）才恢复**，表现正是「新建会话对话后标题不刷新显示，切一下会话才正常」。
+  现在改为**无记忆判定**：每次 `update()` 都先临时摘掉 `.bst-crumb-iconic`（强制同步重排、同一帧内还原，不闪），在「文本可见」的真实布局下量出每一级的可见宽度，再纯函数式地得出结论。没有「上次状态」，布局一变，下一轮（`ResizeObserver` / `resize` / 300ms 轮询）立刻自我纠正。另加防重入标志，避免强制重排触发的 `ResizeObserver` 回调递归。
+
+## [1.6.2] - 2026-10-29
+
+### Fixed
+
+- **窄窗口里工作区名 / 会话名不再被“图标态”吃掉。** 两种情况叠在一起，让「只要顶栏一挤，名称就整体消失」：
+  - 兜底规则过激：只要整条面包屑溢出（`el.scrollWidth > el.clientWidth`）就**全部**收成图标。而顶栏还要让位给其它插件的动作（智能体团队 / 标准模式 / 后台任务），窄窗口下面包屑必然被挤窄 —— 此时每一级其实都还有 100px 出头、带着省略号的可读文本，却被判成了图标，用户看到的就是「两个图标、没有名字」。现在只在**真被窗口边缘裁切**时（整行溢出且没有任何一级出现正常的省略号截断）才整体退化为图标兜底；文本仍在按钮内正常省略时一律保留文本。
+  - 按钮不会跟着容器收缩：`.bst-crumb`（flex 项）会收缩到 117px，里面的 `.bst-crumb-btn` 却仍按 max-content 停在 180px 并溢出父盒 —— 量出来的 `rowOverflow` 有一部分就是它。给按钮补 `width:100%;box-sizing:border-box`（文本再加 `min-width:0`）后，按钮跟随父盒收缩、文本照常省略号收尾，不再挤到相邻动作上。
+  - 顺带把图标态下限 `ICONIC_TEXT_FLOOR` 从 80（≈5 个汉字）降到 32（≈2 个汉字）：只要还能挤出几个字就显示省略号文本，只有真到几个字都放不下时才退化为图标。
+  - 实测（复刻宿主 `.header / .titleRow / .titleCluster / .headerActions` 布局，Chromium 无头量取值）：视口 674px 下修复前 `crumbs` 溢出 270/323、两级全判图标；修复后不再溢出（255/255），工作区名与会话名都保留可读的省略号文本（65px / 56px）；视口再窄到 ~530px 才全部退化为图标，~610px 时会话级先退化为图标、工作区名仍可见。
+
 ## [1.6.1] - 2026-10-28
 
 ### Changed
 
 - **运行中标记改为 DSH 桌面端原生样式**：改用原生 `StateDot`（`@deepseek-ai/dsh-client-ui-primitives`）组件，运行中显示为空心圆环（与侧边栏会话行完全一致），不再使用自绘绿色脉冲点。
 - **新增「待审批」状态显示**：当会话存在待处理的审批/计划审核/待回答交互时，左侧显示橙色 `StateDot`（warning），行尾把相对时间替换为「待审批 / 计划待审 / 待回答」文字，对齐原生 `sessionStatuses`（`uiSession.sessionStatus` 的 `pendingInteraction.kind`）。状态来源不变（惰性 `ctx.get('uiSession')`，缺服务时降级为无标记）。
+
+### Docs
+
+- 全面更新文档到当前状态：`README.md` / `README.en.md` 改为「会话增强 / Session Enhance」、安装命令与徽章指向 `dsh-session-enhance`、补充运行中 / 待审批状态与内嵌「会话管理」组件说明；`docs/RELEASE.md` 标注为历史发布清单并更新包名。历史 CHANGELOG 条目保持原样。
+- **仓库地址变更**：owner 从 `xinspark` 调整为 `myeefeng`（与 `git remote` 一致）。同步更新 `package.json` 的 `repository` / `homepage` / `bugs`，以及 `README.md` / `README.en.md` 的徽章与安装命令（`github:myeefeng/dsh-session-enhance`）。
 
 ## [1.6.0] - 2026-10-28
 
