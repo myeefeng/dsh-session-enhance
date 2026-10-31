@@ -1,6 +1,6 @@
 {
   "name": "dsh-session-enhance",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "description": "会话增强 · 工作区/会话面包屑、工作区会话悬停预览与内嵌会话管理（永久删除 / 归档）",
   "icon": "./icon.svg",
   "license": "MIT",

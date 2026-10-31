@@ -5,6 +5,19 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.2] - 2026-10-31
+
+### Changed
+
+- **会话状态映射改为「兜底式」，跟随 DSH 升级零维护**：面包屑与悬停列表都直接消费宿主 `uiSession.sessionStatus` 的 live 快照（本就未另存一套会话状态），仅把 DSH 的状态翻译成行内视觉。本次让翻译对未知状态永不静默丢弃：
+  - DSH 新增、本插件尚未对齐的 `pendingInteraction.kind` → 一律兜底成橙色「待处理」（若 DSH 在对象上带 `label` 则优先显示该原文案），而不是整行无标记。
+  - `bstStatusLabel` 对未知 `state` 值兜底为「状态」，避免 `aria-label`/`title` 出现 `undefined`。
+  - 已知状态（审批 / 计划待审 / 待回答 / 运行中 / 完成未读）行为不变。
+
+### Added
+
+- 国际化：`status.pendingGeneric`（待处理 / Pending）、`status.unknown`（状态 / Status），用于兜底文案。
+
 ## [1.7.1] - 2026-10-30
 
 ### Added
