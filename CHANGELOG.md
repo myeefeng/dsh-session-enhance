@@ -5,6 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.1] - 2026-10-30
+
+### Added
+
+- **置顶会话的行尾标记（对齐原生 `PinnedIndicator`）。** 之前置顶只影响排序（置顶在前），列表里看不出「哪条是置顶的」；现在置顶会话在行尾（相对时间之后）显示一个灰色小图钉，**会话下拉与悬停工作区行的侧栏两处一致**：
+  - 与 DSH 原生侧边栏的置顶标记逐项对齐：非交互的 `span`（`role="img"`，`aria-label` / `title` = 「已置顶」/「Pinned」，文案取自原生 `row.pinned`），内部 `IconPinFillRegular` 14px，颜色 `--dsw-alias-label-caption`，盒 16×20；行本身仍是唯一的可点区域（标记不吃点击）。
+  - 悬停该行时图钉让位给「更多」按钮 —— 与原生 `.sessionRow:hover .pinIndicator{display:none}` 同一策略（原生注释写明：悬停按钮的落点正是静止态标记的位置）。悬停侧栏的行没有「更多」按钮，故 `.bst-list.bst-side` 覆盖该规则，图钉在那里常显。
+  - 顺带修正：主列表「悬停隐藏元信息」的规则此前也会在侧栏里隐藏相对时间（侧栏早已覆盖），这次把图钉一并纳入同一组覆盖，避免两处行为分叉。
+  - 验证：本地最小 DSH 环境替身（React 18 + 无头 Chromium/CDP，脚本在 `.tmp/`，未入库）断言 —— 会话下拉里置顶行有标记、非置顶行没有；标记排在相对时间之后且是该行最后一个子元素；`role=img`、文案「已置顶」、svg 14×14、盒 16×20、颜色 `rgb(165,173,182)`（label-caption）；悬停置顶行时图钉 `display:none` 且「更多」按钮出现；悬停 ddcloud 的侧栏里两条置顶会话都有标记、指针进入侧栏后仍保持 `flex`；注入的 CSS 三条规则（基础 / 悬停隐藏 / 侧栏覆盖）均存在。
+
 ## [1.7.0] - 2026-10-30
 
 ### Added
