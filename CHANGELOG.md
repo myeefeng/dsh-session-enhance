@@ -5,6 +5,14 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.3] - 2026-11-02
+
+### Fixed
+
+- **有子任务在跑时，会话状态显示成「完成」而不是「运行中」**：之前只读 `uiSession.sessionStatus` 的 `running` 标志，父会话自身不在跑、仅子智能体在跑时会落到 `completionUnread` → 完成（绿点），与原生不一致。
+  - 现按原生 `sessionStatuses` 的优先级补齐：**待办 > 运行中 > 子智能体运行中 > 完成未读**。用原生同源的 `projectionsBySession[parentId].values.subagentCatalog` 统计仍在跑的子会话（优先 `status.running`，回落会话摘要 `running`，与原生 `runningChildCount` 一致），命中即把父会话抬成 `ongoing`；待办（`warning`）优先级更高，保持不变。
+  - 校验：同一 fixture 下，修复前该行为绿色「完成」，修复后为蓝色空心环「运行中」；对照组「仅完成未读（无子任务）」仍为绿色「完成」。
+
 ## [1.7.2] - 2026-10-31
 
 ### Changed
