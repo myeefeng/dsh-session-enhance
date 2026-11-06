@@ -5,6 +5,28 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.1] - 2026-11-06
+
+### Added
+
+- **「已归档会话」设置页新增版本更新提示**：版本信息放在**标题行右侧**（`版本 v1.8.1` + `检查更新`），检查结果在说明文字下方按需出现。不另起一张卡片 —— 实测那样会在「标题 → 说明 → 搜索框」之间插进一个孤立盒子，很突兀。
+  - 当前版本由内嵌「会话管理」组件的新 host 路由 `GET /plugins/dsh-session-enhance/version` 读**包根 `package.json`** 回传 —— 升级后自动跟着变，不会像注入常量那样漂。取不到时依次回落到 `window.__DSH_PLUGIN_VERSION__`、再回落到常量。
+  - 检查顺序：GitHub latest Release（读 `tag_name`）→ 失败则退到仓库 `main` 的 `package.json`（读 `version`）。实测本机出口 IP 常被 `api.github.com` 限流成 403，只走前者会让这个按钮常态失败；`raw.githubusercontent.com` 同一份内容且不限流，作为第二级兜底。两侧都失败才显示错误行（`role="alert"`，含「检查更新失败」）。
+  - 结果三态：`已是最新（HH:MM）` / `发现新版本 vX.Y.Z`（并给出一行可直接复制的更新命令 `dsh plugin --profile <profile> add github:myeefeng/dsh-session-enhance#vX.Y.Z`）/ 错误。
+  - **profile 名与安装形态都来自宿主**（同一路由回传的 `profile` / `installKind` / `installSpec`），不是写死的 `web`：写死会把命令指到用户没在用的 profile 上。
+  - **以本地目录链接安装（`file:` / `link:`）或安装形态未知时不给命令**：那种装法下 `dsh plugin add` 会从 GitHub 装一份新副本，而用户跑的是自己的源码树 —— 命令「成功」了界面却一点没变。该分支改为说明实情并指向用户自己的源码目录；`unknown` 时提示到「插件」页点「更新」。`profile` 未知时命令用字面量 `<profile>` 占位符。
+  - 版本比较按**语义化数字逐段**比，忽略前导 `v` 与预发布后缀：`1.10.0` > `1.9.9`（字符串比较会判反），远端 `v1.7.2` 判为「已是最新」而不是误报旧版本。
+  - 两个远端请求都带 `cache:'no-store'`，并有 10 秒 `AbortController` 超时；组件卸载时中止在途请求、清掉「已复制」计时器。连点「复制命令」时**先清旧计时器再装新的** —— 否则第一次的 1500ms 到期会把第二次的「已复制」提前撤掉（实测约 1120ms 而非 1500ms）。
+  - **不自动执行安装**：改 profile 依赖需要宿主侧进程权限，且装坏后连本插件的 client bundle 都加载不出来（界面直接白屏）。插件只给命令，由用户在终端执行。
+  - 校验：无头 Chromium + React 18 独立验证台（`.tmp/`，未入库）跑 51 条断言全通过 —— 五态（idle / checking / latest / outdated / error）、github / file / unknown 三种装法分支、profile 缺失的占位符、连点复制的计时器、403→raw 兜底、两侧失败、语义比较三组、空归档列表仍有卡片、所有请求 `no-store`、10 秒真超时后按钮恢复且 signal 确实被 abort；另有「标题行不再出现旧『当前版本』标签」的布局断言。状态用提升到分区级的共享 store（`useSyncExternalStore`）持有 —— 标题行与下方结果块在 React 树里是兄弟、不共享 props，且分区卸载时一并中止在途请求、清「已复制」计时器。
+
+### Changed
+
+- 内嵌组件「会话管理」新增只读路由 `GET /plugins/dsh-session-enhance/version`（仅 GET/HEAD，`no-store`，读包根 `package.json`，并回传 `profile` / `installKind` / `installSpec`）。它随组件行开关：组件被停用时路由不存在，版本号静默回落到常量，不报错。
+  - 同源校验**允许缺失 `Origin`**：同源 GET 浏览器不发该头，沿用归档路由那条严格判定会把页面自己的请求 403 掉（表现是版本号永远停在常量）。跨源带 `Origin` 仍 403，POST/DELETE 仍 405；该端点无副作用、响应只是版本号与安装形态，放宽不引入可写面。
+  - 接线按内核分岔：新内核有 `connection.requestRejection` 时用宿主自己的栅栏（它同样允许缺 `Origin`），旧内核没有该服务、`hostRequestFence` 会退化成严格同源判定时才用上面这条宽容判定 —— 否则旧内核上页面自己的 GET 会被 403。
+- `locale/{zh,en}.json` 的 `meta.description`、`package.json` 的 `description` 同步补充「版本更新提示」。
+
 ## [1.7.3] - 2026-11-02
 
 ### Fixed

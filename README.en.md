@@ -13,7 +13,7 @@
 
 <h3 align="center">Topbar "Workspace / Session" breadcrumb + embedded session management (permanent delete / archive), with running / pending-approval status</h3>
 
-<p align="center"><a href="#install"><ins><code>dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.6.1</code></ins></a></p>
+<p align="center"><a href="#install"><ins><code>dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.8.1</code></ins></a></p>
 
 **Session Enhance** is a **session-topbar enhancement plugin** for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) — mostly UI enhancement, plus an embedded, toggleable "Session management" component (permanent delete / archive). DSH's native topbar shows only the session title (an ancestry breadcrumb) in the center, while workspace/session switching lives in the left sidebar; when the sidebar is collapsed, every switch costs extra clicks. This plugin puts the switching entry right into the topbar:
 
@@ -27,15 +27,15 @@ All inline row actions reuse native DSH capabilities: rename workspace/session, 
 
 Works on **Windows · macOS · Linux** (DSH Web GUI) — plain JavaScript, no native dependencies, no build step for distribution.
 
-> Verification baseline: **DeepSeek Harness 0.2.1-rc.2** (DSH NEXT Desktop and `dsh web`); 0.2.0-rc.2 also compatible. Other versions are untested.
+> Verification baseline: **DeepSeek Harness 0.2.2-rc.1** (DSH NEXT Desktop and `dsh web`); 0.2.1-rc.2 and 0.2.0-rc.2 also compatible. Other versions are untested.
 
 ## Install
 
 `dsh-session-enhance` is a **bundle** — a configuration patch layer distributed as a package (see the [official DSH plugin publishing docs](https://deepseek-harness.github.io/deepseek-harness/develop/basic/publish)). Install it into a profile with `dsh plugin`: it links the package and appends it to `dsh.profile.bundles`:
 
 ```sh
-# from GitHub (primary channel; v1.6.1 is the current release tag)
-dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.6.1
+# from GitHub (primary channel; v1.8.1 is the current release tag)
+dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.8.1
 ```
 
 - **Consider locking a commit**: a GitHub install pulls the repository source, so later pushes don't silently change what you run. To pin the exact content, use `github:myeefeng/dsh-session-enhance#<commit-sha>` (as recommended by the official docs).
@@ -43,7 +43,7 @@ dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.6.1
 
   ```sh
   dsh plugin --profile web add ./dsh-session-enhance
-  dsh plugin --profile web add ./dsh-session-enhance-1.6.1.tgz
+  dsh plugin --profile web add ./dsh-session-enhance-1.8.1.tgz
   ```
 
 Then start the Web UI: `dsh web` (or `dsh --profile web`). The first `add` auto-initializes the profile with `@deepseek-ai/dsh-base`.
@@ -64,7 +64,7 @@ The bundle patch (`cordis.patch.yml`) registers the main plugin row and the embe
 | Workspace hover preview | Hovering a workspace row expands that workspace's session list to the right (pinned first, current session highlighted, relative time at the row end, status dot at the row start); click a row to switch. Moving away closes it. It flips to the row's left when there is no room on the right, and stays inside the viewport in narrow windows. Opening has a 120ms intent delay (skimming down the list does not pop panels on every row); closing has a 200ms grace period (crossing the gap into the panel does not close it). Pointer-driven; keyboard users keep using the session dropdown. |
 | Session dropdown | Session list of the current workspace (relative-time meta), New session, row "more": rename / fork / archive session, **permanent delete** (calls the embedded `dsh-session-enhance/chat-manager` delete route). The leading side shows native `StateDot` status (running hollow ring / pending-approval orange dot); for pending approval the row end shows the matching label (e.g. "Approval"). Pinned sessions carry a small grey pin at the row end (see "Pinned-session marker"). |
 | Pinned-session marker | A pinned session shows a grey pin at the row end in **both the session dropdown and the hover preview**, placed right after the relative time — matching the native DSH sidebar `PinnedIndicator` item by item: a non-interactive `role="img"` span (`aria-label`/`title` = "Pinned", taken from the native `row.pinned`), containing `IconPinFillRegular` at 14px, colored `--dsw-alias-label-caption`, in a 16×20 box. The row itself remains the only action target. Hovering the row hides the pin in favour of the "more" button (same policy as the native `.sessionRow:hover .pinIndicator`, because the more button lands exactly where the resting pin sits); rows in the hover preview have no "more" button, so the pin stays visible there. |
-| Session management (embedded component) | Permanently delete sessions (with confirmation), archive sessions, and an "Archived sessions" settings page (search / unarchive / permanently delete). See "Embedded component: Session management" below. |
+| Session management (embedded component) | Permanently delete sessions (with confirmation), archive sessions, and an "Archived sessions" settings page (search / unarchive / permanently delete / **version update notice**). See "Embedded component: Session management" below. |
 | Breadcrumb on the new-session screen | While a new session is being started the host suppresses the topbar title (`hideChrome`), and `conversation.header.leading` is the seat it reserves for "global navigation before the Session title" (scope=root, always rendered) — so the new-session topbar is otherwise empty. The plugin registers there too: "Workspace / New session", with the workspace's session history in the session dropdown — reach an earlier session while starting a new one, without opening the sidebar. Mutually exclusive with the in-session breadcrumb (it does not render once a real session is open), so the topbar never shows two. |
 | Native-consistent interactions | The dropdown is a self-drawn layer that reuses the native menu tokens (`--dsw-elevation-prominent`, `--dsw-radius-lg`, `--dsw-menu-surface-fill` + `--dsw-menu-backdrop-filter`, hover fill `--dsw-alias-interactive-bg-hover`); its row metrics are min-height 40 / padding 8·10 / 14px·22px (matching the native `AccountMenu` `[role=menuitem]`; the native `Menu.module.css` is more compact and this plugin does not follow it). The more menu and rename/delete dialogs use the native `Menu` / `Modal` / `Button` / `Input` (autoFocus, select-all, IME-safe Enter, duplicate workspace-name check, error rows). |
 | Shared lifecycle | The more menu closes with its owning dropdown (outside click / Escape / selection / switching) — no orphan menus. |
@@ -99,6 +99,33 @@ After installation, open any session — the topbar center shows the "Workspace 
 - Leading status dot: hollow ring = running; orange dot = pending approval / plan review / answer (the row end then shows the matching label).
 - Select a row to switch; click outside or press `Esc` to close the dropdown.
 
+### Version update notice
+
+The "Archived sessions" section in Settings starts with a version card:
+
+- It shows the **current version** (`v1.8.1`), read from the package root `package.json` through the embedded
+  component's host route, so it follows upgrades automatically.
+- "Check for updates" asks for the latest GitHub Release first; if that is unavailable (the API is often
+  rate-limited to 403) it falls back to `package.json` on the repo's `main` branch. It only reports an error
+  when both fail.
+- When a newer version exists it shows "New version available vX.Y.Z" plus a **ready-to-copy update command**
+  carrying the profile name the host reported:
+
+  ```sh
+  dsh plugin --profile desktop add github:myeefeng/dsh-session-enhance#v1.8.1
+  ```
+
+  Run it in a terminal, then reload the page. The plugin **never runs the install itself** — changing profile
+  dependencies needs host-side process permission, and a broken install takes this plugin's own UI down with it.
+- **Installed as a local directory link? No command is offered** (when `dependencies["dsh-session-enhance"]` is
+  `file:…` / `link:…`). In that layout `dsh plugin add` installs a **fresh copy** from GitHub while you are
+  running your own source tree — the command would report success and the UI would not change. The card explains
+  this instead and points you at your own checkout. When the host does **not** report the install kind, no command
+  is offered either: better to show just "New version available" than a command that may install into the wrong
+  place. Both host-side facts (profile name, install kind) come from `GET /plugins/dsh-session-enhance/version`.
+- Versions are compared semantically, segment by segment, so `1.10.0` is newer than `1.9.9` and `v1.7.2` is not
+  reported as an update.
+
 ## Relationship with DSH
 
 This project is built on the official [deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness) and is a **community plugin** — not an official DeepSeek product. Everything it shows is DSH's own data and UI, re-arranged; no system source changes.
@@ -129,8 +156,8 @@ Quick reference:
 
 Permanent delete / archive management needs always-present host routes (`/plugins/dsh-session-delete/*`), so [dsh-chat-manager](https://github.com/)'s **full functionality** is embedded as a **required, toggleable component** of this plugin (display name "Session management"), rather than an external dependency:
 
-- **Host half** (`lib/components/chat-manager/index.js` + `host/`, reusing dsh-chat-manager's `delete-session` / `archive-manager`): routes for permanent delete and archive, gated by the component-row toggle.
-- **Client half** (merged into the main `lib/client.js` as `registerChatManagerClient`, loaded with the main plugin): the sidebar session-menu "Delete permanently" item + delete confirmation dialog, the sidebar header "Archived sessions" entry, and the "Archived sessions" settings page (search / unarchive / permanently delete).
+- **Host half** (`lib/components/chat-manager/index.js` + `host/`, reusing dsh-chat-manager's `delete-session` / `archive-manager`): routes for permanent delete and archive, plus `GET /plugins/dsh-session-enhance/version` (the version badge's authoritative source: the package root `package.json`), gated by the component-row toggle.
+- **Client half** (merged into the main `lib/client.js` as `registerChatManagerClient`, loaded with the main plugin): the sidebar session-menu "Delete permanently" item + delete confirmation dialog, the sidebar header "Archived sessions" entry, and the "Archived sessions" settings page (search / unarchive / permanently delete / version update notice `VersionUpdateCard`).
 - Registered as a toggleable row in `package.json` and `cordis.patch.yml` (`id: dsh-bst-chat-manager`, `name: dsh-session-enhance/chat-manager`), **enabled by default**, toggleable in DSH's Components view.
 - **Architecture note**: DSH serves exactly **one** `./client` bundle per npm package (resolved by package name from `dsh.client` + `exports["./client"]` via `dsh-client-modules`); a sub-component cannot carry its own client half, so chat-manager's client features are merged into the main client and registered in the main `apply`. The component row carries only the host routes (toggleable).
 - **Copyright**: the component code is copied from dsh-chat-manager (MIT, © WSL043), with attribution and license retained.

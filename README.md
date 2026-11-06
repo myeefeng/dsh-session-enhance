@@ -13,7 +13,7 @@
 
 <h3 align="center">顶栏「工作区 / 会话」面包屑 + 内嵌会话管理（永久删除 / 归档），并显示运行中 / 待审批状态</h3>
 
-<p align="center"><a href="#安装"><ins><code>dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.6.1</code></ins></a></p>
+<p align="center"><a href="#安装"><ins><code>dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.8.1</code></ins></a></p>
 
 **会话增强（Session Enhance）** 是面向 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的**会话顶栏增强插件**——以 UI 增强为主，并内嵌可开关的「会话管理」组件（会话永久删除 / 归档）。DSH 原生顶栏中央只显示会话标题（层级面包屑），工作区/会话的切换入口在左侧边栏；侧边栏收起时，每次切换都要额外点击。本插件把切换入口直接放进顶栏：
 
@@ -27,15 +27,15 @@
 
 支持 **Windows · macOS · Linux**（DSH Web GUI）——纯 JavaScript，无原生依赖，分发无需构建步骤。
 
-> 验证基线：**DeepSeek Harness 0.2.1-rc.2**（DSH NEXT Desktop 与 `dsh web`）；同时兼容 0.2.0-rc.2。其它版本未经验证。
+> 验证基线：**DeepSeek Harness 0.2.2-rc.1**（DSH NEXT Desktop 与 `dsh web`）；同时兼容 0.2.1-rc.2 / 0.2.0-rc.2。其它版本未经验证。
 
 ## 安装
 
 `dsh-session-enhance` 是一个**组合包（bundle）**——以包形式分发的配置补丁层（见 [DSH 官方插件发布文档](https://deepseek-harness.github.io/deepseek-harness/develop/basic/publish)）。用 `dsh plugin` 命令安装进 profile：它会自动链接包并追加到 `dsh.profile.bundles`：
 
 ```sh
-# 从 GitHub 安装（主分发渠道，v1.6.1 为当前发布 tag）
-dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.6.1
+# 从 GitHub 安装（主分发渠道，v1.8.1 为当前发布 tag）
+dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.8.1
 ```
 
 - **建议锁定 commit**：GitHub 安装拉取的是仓库源码，tag 之后的新推送不会自动影响已安装版本；如需把运行内容严格固定到某个提交，用 `github:myeefeng/dsh-session-enhance#<commit-sha>`（官方文档推荐做法）。
@@ -43,7 +43,7 @@ dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.6.1
 
   ```sh
   dsh plugin --profile web add ./dsh-session-enhance
-  dsh plugin --profile web add ./dsh-session-enhance-1.6.1.tgz
+  dsh plugin --profile web add ./dsh-session-enhance-1.8.1.tgz
   ```
 
 然后启动 Web UI：`dsh web`（或 `dsh --profile web`）。首次 `add` 会自动用 `@deepseek-ai/dsh-base` 初始化 profile。
@@ -64,7 +64,7 @@ dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.6.1
 | 工作区行悬停预览 | 鼠标停在某个工作区行上，右侧展开该工作区的会话列表（置顶优先、当前会话高亮，行尾相对时间、行首状态点），点行直接切过去；移开鼠标自动收起。右侧放不下时翻到行左侧，窄窗口下夹进视口。悬停有 120ms 意图延迟（沿列表划下去不会一路弹窗），移出有 200ms 宽限（跨过间隙进侧栏不会误关）。指针触发；键盘用户仍用会话下拉。 |
 | 会话下拉 | 当前工作区的会话列表（含相对时间元信息）、新建会话、行内更多：重命名 / 分支 / 归档会话、**永久删除**（调用内嵌组件 `dsh-session-enhance/chat-manager` 的删除路由）。行首用原生 `StateDot` 显示状态（运行中空心圆环 / 待审批橙色圆点），待审批时行尾显示「待审批」等文字。置顶会话行尾另有一个灰色图钉标记（见「置顶会话标记」）。 |
 | 置顶会话标记 | 置顶的会话在**会话下拉与悬停侧栏**两处行尾都显示一个灰色图钉，位置在相对时间之后 —— 与 DSH 原生侧边栏的 `PinnedIndicator` 逐项对齐：非交互的 `role="img"` span（`aria-label`/`title` = 「已置顶」/「Pinned」，取自原生 `row.pinned`）、内部 `IconPinFillRegular` 14px、颜色 `--dsw-alias-label-caption`、盒 16×20。行本身仍是唯一的可点区域；悬停该行时图钉让位给「更多」按钮（与原生 `.sessionRow:hover .pinIndicator` 同一策略，因为「更多」按钮的落点正是静止态图钉的位置）；悬停侧栏的行没有「更多」按钮，图钉在那里常显。 |
-| 会话管理（内嵌组件） | 永久删除会话（二次确认）、归档会话、「已归档会话」设置页（搜索 / 取消归档 / 永久删除）。见下文「内嵌组件：会话管理」。 |
+| 会话管理（内嵌组件） | 永久删除会话（二次确认）、归档会话、「已归档会话」设置页（搜索 / 取消归档 / 永久删除 / **版本更新提示**）。见下文「内嵌组件：会话管理」。 |
 | 新会话页的面包屑 | 新会话时宿主会抑制顶栏标题内容（`hideChrome`），而 `conversation.header.leading` 正是宿主为「会话之前就要有全局导航」预留的空位（scope=root、常驻渲染）—— 于是新会话页顶栏本来是空的。插件在这一槽额外注册一份：显示「工作区 / 新会话」，会话下拉里列出该工作区的历史会话 —— 新增会话时想回看旧会话不必开侧边栏。与有会话时的那份**互斥**（有真实会话时这一份不渲染），同一时刻顶栏只有一条面包屑。 |
 | 原生一致的交互 | 下拉为自绘层，卡片沿用原生菜单 token（`--dsw-elevation-prominent`、`--dsw-radius-lg`、`--dsw-menu-surface-fill` + `--dsw-menu-backdrop-filter`、hover 填充 `--dsw-alias-interactive-bg-hover`）；行内度量为 min-height 40 / padding 8·10 / 14px·22px（与原生 `AccountMenu` 的 `[role=menuitem]` 一致；原生 `Menu.module.css` 更紧凑，本插件未跟随）。更多菜单、重命名/删除对话框全部使用原生 `Menu` / `Modal` / `Button` / `Input`（autoFocus、全选、输入法组合 Enter 防误触、工作区重复名校验、错误行）。 |
 | 生命周期一致 | 更多菜单跟随其所在下拉同生命周期：下拉关闭（点击外部 / Escape / 选择 / 切换）时菜单一并关闭，不残留孤立菜单。 |
@@ -100,6 +100,22 @@ dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.6.1
 - 行尾图钉：该会话已置顶（悬停时让位给「更多」按钮）。
 - 选择行即切换；点击空白处或按 `Esc` 关闭下拉。
 
+### 版本更新提示
+
+设置页 →「已归档会话」分区的**标题行右侧**是版本信息：`版本 v1.8.1` + `检查更新` 按钮（窄窗口时折到标题下方）。它不单独占一张卡片 —— 夹在标题与搜索框之间会打断「标题 → 说明 → 搜索框」的视觉流。检查结果只在有内容时才出现在说明文字下方（无边框无底色）。
+
+- 显示**当前版本**（`v1.8.1`），来源是内嵌组件读出的包根 `package.json`，升级后自动跟着变。
+- 点「检查更新」：先查 GitHub 的 latest Release，取不到（例如 API 被限流成 403）再退到仓库 `main` 分支的 `package.json`；两侧都失败才报错。
+- 有更新时显示「发现新版本 vX.Y.Z」并给出**一行可直接复制的更新命令**（profile 名取自宿主，不是你猜的）：
+
+  ```sh
+  dsh plugin --profile desktop add github:myeefeng/dsh-session-enhance#v1.8.1
+  ```
+
+  在终端执行它即可升级，升级后刷新页面。插件**不会自己跑安装命令**——改 profile 依赖属于宿主侧的进程权限，且装坏后连本插件的界面都加载不出来。
+- **以本地目录链接安装时不显示更新命令**（`dependencies["dsh-session-enhance"]` 是 `file:…` / `link:…` 时）：那种装法下 `dsh plugin add` 会从 GitHub 装一份**新副本**，而你正在跑的是自己那个工作树 —— 命令跑完「已是最新」，界面却一点没变。卡片改为说明实情，让你在自己的源码目录里拉取并切到新版本。宿主**没报告**安装形态时同样不给命令（宁可只显示「发现新版本」，也不给一条可能装错地方的命令），改为提示到「插件」页点「更新」。宿主侧的两条事实（profile 名、安装形态）都由 `GET /plugins/dsh-session-enhance/version` 回传。
+- 版本比较按语义化数字逐段比（`1.10.0` 比 `1.9.9` 新），不会把 `v1.7.2` 误判成新版本。
+
 ## 与官方项目的关系
 
 本项目基于官方 [deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness) 构建，是一个**社区插件**，并非 DeepSeek 官方产品。它展示的都是 DSH 自己的数据与界面，只是重新组织；不修改任何系统源码。
@@ -130,8 +146,8 @@ dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.6.1
 
 会话「永久删除 / 归档管理」需要常驻的 host 路由（`/plugins/dsh-session-delete/*`），因此把 [dsh-chat-manager](https://github.com/) 的**全部功能**作为本插件的**必选组件**内嵌进来（组件显示名「会话管理」），而不是作为外部依赖：
 
-- **host 半**（`lib/components/chat-manager/index.js` + `host/`，复用 dsh-chat-manager 的 `delete-session` / `archive-manager`）：会话永久删除、归档会话的路由，由组件行开关控制。
-- **client 半**（并入主插件 `lib/client.js` 的 `registerChatManagerClient`，随主插件加载）：侧边栏会话菜单的「永久删除」项 + 删除确认对话框、侧边栏头部「已归档会话」入口、设置页「已归档会话」（搜索 / 取消归档 / 永久删除）。
+- **host 半**（`lib/components/chat-manager/index.js` + `host/`，复用 dsh-chat-manager 的 `delete-session` / `archive-manager`）：会话永久删除、归档会话的路由，外加 `GET /plugins/dsh-session-enhance/version`（版本徽标的权威来源：读包根 `package.json`），由组件行开关控制。
+- **client 半**（并入主插件 `lib/client.js` 的 `registerChatManagerClient`，随主插件加载）：侧边栏会话菜单的「永久删除」项 + 删除确认对话框、侧边栏头部「已归档会话」入口、设置页「已归档会话」（搜索 / 取消归档 / 永久删除 / 版本更新提示 `VersionUpdateCard`）。
 - 在 `package.json` 与 `cordis.patch.yml` 中注册为一条可开关行（`id: dsh-bst-chat-manager`、`name: dsh-session-enhance/chat-manager`），**默认开启**，可在 DSH 组件开关里停用。
 - **架构说明**：DSH 客户端每个 npm 包仅有**一个** `./client` bundle（`dsh-client-modules` 按包名解析出该包的 `dsh.client` + `exports["./client"]`），子组件无法自带独立 client 半，故 chat-manager 的 client 功能全部并入主 client、在主插件 `apply` 时一并注册；组件行只承载 host 路由（可开关）。
 - **版权**：组件代码以 MIT 许可从 dsh-chat-manager（© WSL043）复制，版权与许可声明随组件保留。
