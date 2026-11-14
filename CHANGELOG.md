@@ -5,6 +5,15 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- **行内「更多」菜单不再漂到窗口左下角（DSH 0.2.2-rc.3）**：新内核的原生 `Menu` 改用 CSS anchor positioning（`anchor-name` / `position-anchor`），并移除了 `getAnchorRect`。此前本插件仍只传 `getAnchorRect`，又给 `Menu` 的空包裹加了 `display:contents` —— 没有盒就没有锚，`anchor()` 失效后菜单落到窗口兜底位置；点面包屑下拉里行尾的「…」时，表现为菜单出现在左下角。
+  - 现在两条锚并存：新内核传 `anchorPoint`（`{x: ellipsis.right, y: ellipsis.bottom}`，与原生 context menu 同款；宿主把 `Menu` 根 span 定位成该点上的 0×0 固定盒），旧内核仍传 `getAnchorRect`（`moreRectRef`，引用稳定）；`align: 'end'` 保持「右缘对齐、下方 4px」的原生落点。
+  - `.bst-more-menu` 从 `display:contents` 改为 `position:fixed;left:0;top:0;width:0;height:0;overflow:hidden;pointer-events:none`：既不给顶栏 `.headerActions` 增加 8px flex 间隙，又保留一个真实的锚盒；开菜单时宿主用 `anchorPoint` 覆写 `left`/`top`。
+  - 兼容性：`getAnchorRect` 对 0.2.0-rc.2 / 0.2.1-rc.2 继续有效，`anchorPoint` 在旧内核上是被忽略的未知 prop，不影响既有行为。
+
 ## [1.8.1] - 2026-11-06
 
 ### Added
