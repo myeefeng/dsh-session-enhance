@@ -13,7 +13,7 @@
 
 <h3 align="center">顶栏「工作区 / 会话」面包屑 + 内嵌会话管理（永久删除 / 归档），并显示运行中 / 待审批状态</h3>
 
-<p align="center"><a href="#安装"><ins><code>dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.8.1</code></ins></a></p>
+<p align="center"><a href="#安装"><ins><code>dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.8.2</code></ins></a></p>
 
 **会话增强（Session Enhance）** 是面向 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的**会话顶栏增强插件**——以 UI 增强为主，并内嵌可开关的「会话管理」组件（会话永久删除 / 归档）。DSH 原生顶栏中央只显示会话标题（层级面包屑），工作区/会话的切换入口在左侧边栏；侧边栏收起时，每次切换都要额外点击。本插件把切换入口直接放进顶栏：
 
@@ -34,8 +34,8 @@
 `dsh-session-enhance` 是一个**组合包（bundle）**——以包形式分发的配置补丁层（见 [DSH 官方插件发布文档](https://deepseek-harness.github.io/deepseek-harness/develop/basic/publish)）。用 `dsh plugin` 命令安装进 profile：它会自动链接包并追加到 `dsh.profile.bundles`：
 
 ```sh
-# 从 GitHub 安装（主分发渠道，v1.8.1 为当前发布 tag）
-dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.8.1
+# 从 GitHub 安装（主分发渠道，v1.8.2 为当前发布 tag）
+dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.8.2
 ```
 
 - **建议锁定 commit**：GitHub 安装拉取的是仓库源码，tag 之后的新推送不会自动影响已安装版本；如需把运行内容严格固定到某个提交，用 `github:myeefeng/dsh-session-enhance#<commit-sha>`（官方文档推荐做法）。
@@ -43,7 +43,7 @@ dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.8.1
 
   ```sh
   dsh plugin --profile web add ./dsh-session-enhance
-  dsh plugin --profile web add ./dsh-session-enhance-1.8.1.tgz
+  dsh plugin --profile web add ./dsh-session-enhance-1.8.2.tgz
   ```
 
 然后启动 Web UI：`dsh web`（或 `dsh --profile web`）。首次 `add` 会自动用 `@deepseek-ai/dsh-base` 初始化 profile。
@@ -102,14 +102,14 @@ dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.8.1
 
 ### 版本更新提示
 
-设置页 →「已归档会话」分区的**标题行右侧**是版本信息：`版本 v1.8.1` + `检查更新` 按钮（窄窗口时折到标题下方）。它不单独占一张卡片 —— 夹在标题与搜索框之间会打断「标题 → 说明 → 搜索框」的视觉流。检查结果只在有内容时才出现在说明文字下方（无边框无底色）。
+设置页 →「已归档会话」分区的**标题行右侧**是版本信息：`版本 v1.8.2` + `检查更新` 按钮（窄窗口时折到标题下方）。它不单独占一张卡片 —— 夹在标题与搜索框之间会打断「标题 → 说明 → 搜索框」的视觉流。检查结果只在有内容时才出现在说明文字下方（无边框无底色）。
 
-- 显示**当前版本**（`v1.8.1`），来源是内嵌组件读出的包根 `package.json`，升级后自动跟着变。
+- 显示**当前版本**（`v1.8.2`），来源是内嵌组件读出的包根 `package.json`，升级后自动跟着变。
 - 点「检查更新」：先查 GitHub 的 latest Release，取不到（例如 API 被限流成 403）再退到仓库 `main` 分支的 `package.json`；两侧都失败才报错。
 - 有更新时显示「发现新版本 vX.Y.Z」并给出**一行可直接复制的更新命令**（profile 名取自宿主，不是你猜的）：
 
   ```sh
-  dsh plugin --profile desktop add github:myeefeng/dsh-session-enhance#v1.8.1
+  dsh plugin --profile desktop add github:myeefeng/dsh-session-enhance#v1.8.2
   ```
 
   在终端执行它即可升级，升级后刷新页面。插件**不会自己跑安装命令**——改 profile 依赖属于宿主侧的进程权限，且装坏后连本插件的界面都加载不出来。

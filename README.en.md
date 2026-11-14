@@ -13,7 +13,7 @@
 
 <h3 align="center">Topbar "Workspace / Session" breadcrumb + embedded session management (permanent delete / archive), with running / pending-approval status</h3>
 
-<p align="center"><a href="#install"><ins><code>dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.8.1</code></ins></a></p>
+<p align="center"><a href="#install"><ins><code>dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.8.2</code></ins></a></p>
 
 **Session Enhance** is a **session-topbar enhancement plugin** for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) — mostly UI enhancement, plus an embedded, toggleable "Session management" component (permanent delete / archive). DSH's native topbar shows only the session title (an ancestry breadcrumb) in the center, while workspace/session switching lives in the left sidebar; when the sidebar is collapsed, every switch costs extra clicks. This plugin puts the switching entry right into the topbar:
 
@@ -34,8 +34,8 @@ Works on **Windows · macOS · Linux** (DSH Web GUI) — plain JavaScript, no na
 `dsh-session-enhance` is a **bundle** — a configuration patch layer distributed as a package (see the [official DSH plugin publishing docs](https://deepseek-harness.github.io/deepseek-harness/develop/basic/publish)). Install it into a profile with `dsh plugin`: it links the package and appends it to `dsh.profile.bundles`:
 
 ```sh
-# from GitHub (primary channel; v1.8.1 is the current release tag)
-dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.8.1
+# from GitHub (primary channel; v1.8.2 is the current release tag)
+dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.8.2
 ```
 
 - **Consider locking a commit**: a GitHub install pulls the repository source, so later pushes don't silently change what you run. To pin the exact content, use `github:myeefeng/dsh-session-enhance#<commit-sha>` (as recommended by the official docs).
@@ -43,7 +43,7 @@ dsh plugin --profile web add github:myeefeng/dsh-session-enhance#v1.8.1
 
   ```sh
   dsh plugin --profile web add ./dsh-session-enhance
-  dsh plugin --profile web add ./dsh-session-enhance-1.8.1.tgz
+  dsh plugin --profile web add ./dsh-session-enhance-1.8.2.tgz
   ```
 
 Then start the Web UI: `dsh web` (or `dsh --profile web`). The first `add` auto-initializes the profile with `@deepseek-ai/dsh-base`.
@@ -103,7 +103,7 @@ After installation, open any session — the topbar center shows the "Workspace 
 
 The "Archived sessions" section in Settings starts with a version card:
 
-- It shows the **current version** (`v1.8.1`), read from the package root `package.json` through the embedded
+- It shows the **current version** (`v1.8.2`), read from the package root `package.json` through the embedded
   component's host route, so it follows upgrades automatically.
 - "Check for updates" asks for the latest GitHub Release first; if that is unavailable (the API is often
   rate-limited to 403) it falls back to `package.json` on the repo's `main` branch. It only reports an error
@@ -112,7 +112,7 @@ The "Archived sessions" section in Settings starts with a version card:
   carrying the profile name the host reported:
 
   ```sh
-  dsh plugin --profile desktop add github:myeefeng/dsh-session-enhance#v1.8.1
+  dsh plugin --profile desktop add github:myeefeng/dsh-session-enhance#v1.8.2
   ```
 
   Run it in a terminal, then reload the page. The plugin **never runs the install itself** — changing profile
